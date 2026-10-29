@@ -1,0 +1,346 @@
+===== baseline (default optimizer, no indexes) =====
+Q3_shipping_priority:
+    SCAN customer
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    BLOOM FILTER ON lineitem (l_orderkey=?)
+    SEARCH lineitem USING AUTOMATIC PARTIAL COVERING INDEX (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    BLOOM FILTER ON lineitem (l_orderkey=?)
+    SEARCH lineitem EXISTS USING AUTOMATIC PARTIAL COVERING INDEX (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SCAN lineitem
+Q10_returned_items:
+    SCAN nation
+    BLOOM FILTER ON customer (c_nationkey=?)
+    SEARCH customer USING AUTOMATIC COVERING INDEX (c_nationkey=?)
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    BLOOM FILTER ON lineitem (l_orderkey=? AND l_returnflag=?)
+    SEARCH lineitem USING AUTOMATIC PARTIAL COVERING INDEX (l_orderkey=? AND l_returnflag=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN lineitem
+    BLOOM FILTER ON orders (o_orderkey=?)
+    SEARCH orders USING AUTOMATIC COVERING INDEX (o_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SCAN lineitem
+    BLOOM FILTER ON part (p_partkey=?)
+    SEARCH part USING AUTOMATIC COVERING INDEX (p_partkey=?)
+P1_customer_orders:
+    SCAN orders
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SCAN partsupp
+    BLOOM FILTER ON supplier (s_suppkey=?)
+    SEARCH supplier USING AUTOMATIC COVERING INDEX (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== greedy (benefit/size), budget 10% =====
+Q3_shipping_priority:
+    SCAN orders
+    BLOOM FILTER ON customer (c_custkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    BLOOM FILTER ON lineitem (l_orderkey=?)
+    SEARCH lineitem USING AUTOMATIC PARTIAL COVERING INDEX (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    BLOOM FILTER ON lineitem (l_orderkey=?)
+    SEARCH lineitem EXISTS USING AUTOMATIC PARTIAL COVERING INDEX (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SCAN lineitem
+Q10_returned_items:
+    SCAN customer USING INDEX idx_customer_c_custkey
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    BLOOM FILTER ON lineitem (l_orderkey=? AND l_returnflag=?)
+    SEARCH lineitem USING AUTOMATIC PARTIAL COVERING INDEX (l_orderkey=? AND l_returnflag=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN lineitem
+    BLOOM FILTER ON orders (o_orderkey=?)
+    SEARCH orders USING AUTOMATIC COVERING INDEX (o_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SCAN lineitem
+    SEARCH part USING INDEX idx_part_p_partkey (p_partkey=?)
+P1_customer_orders:
+    SCAN orders
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SEARCH partsupp USING INDEX idx_partsupp_ps_partkey (ps_partkey=?)
+    SEARCH supplier USING INDEX idx_supplier_s_suppkey (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== measured greedy (26 builds), budget 10% =====
+Q3_shipping_priority:
+    SCAN lineitem
+    BLOOM FILTER ON orders (o_orderkey=?)
+    SEARCH orders USING INDEX idx_orders_o_orderkey (o_orderkey=?)
+    BLOOM FILTER ON customer (c_custkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    BLOOM FILTER ON lineitem (l_orderkey=?)
+    SEARCH lineitem EXISTS USING AUTOMATIC PARTIAL COVERING INDEX (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SCAN lineitem
+Q10_returned_items:
+    SCAN lineitem
+    SEARCH orders USING INDEX idx_orders_o_orderkey (o_orderkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN lineitem
+    SEARCH orders USING COVERING INDEX idx_orders_o_orderkey (o_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SCAN lineitem
+    BLOOM FILTER ON part (p_partkey=?)
+    SEARCH part USING AUTOMATIC COVERING INDEX (p_partkey=?)
+P1_customer_orders:
+    SCAN orders USING INDEX idx_orders_o_orderkey
+P2_part_suppliers:
+    SCAN partsupp
+    SEARCH supplier USING INDEX idx_supplier_s_suppkey (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== greedy (benefit/size), budget 25% =====
+Q3_shipping_priority:
+    SCAN orders
+    BLOOM FILTER ON customer (c_custkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    SEARCH lineitem EXISTS USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SCAN lineitem
+Q10_returned_items:
+    SCAN customer USING INDEX idx_customer_c_custkey
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN orders
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SCAN lineitem
+    SEARCH part USING INDEX idx_part_p_partkey (p_partkey=?)
+P1_customer_orders:
+    SCAN orders
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SEARCH partsupp USING INDEX idx_partsupp_ps_partkey (ps_partkey=?)
+    SEARCH supplier USING INDEX idx_supplier_s_suppkey (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== measured greedy (28 builds), budget 25% =====
+Q3_shipping_priority:
+    SCAN orders
+    BLOOM FILTER ON customer (c_custkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    SEARCH lineitem EXISTS USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SCAN lineitem
+Q10_returned_items:
+    SCAN customer USING INDEX idx_customer_c_custkey
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN orders
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SCAN lineitem
+    BLOOM FILTER ON part (p_partkey=?)
+    SEARCH part USING AUTOMATIC COVERING INDEX (p_partkey=?)
+P1_customer_orders:
+    SCAN orders
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SCAN partsupp
+    BLOOM FILTER ON supplier (s_suppkey=?)
+    SEARCH supplier USING AUTOMATIC COVERING INDEX (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== greedy (benefit/size), budget 50% =====
+Q3_shipping_priority:
+    SCAN orders
+    BLOOM FILTER ON customer (c_custkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    SEARCH lineitem EXISTS USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+Q10_returned_items:
+    SCAN customer USING INDEX idx_customer_c_custkey
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN orders
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+    SEARCH part USING INDEX idx_part_p_partkey (p_partkey=?)
+P1_customer_orders:
+    SCAN orders
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SEARCH partsupp USING INDEX idx_partsupp_ps_partkey (ps_partkey=?)
+    SEARCH supplier USING INDEX idx_supplier_s_suppkey (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== dynamic programming, budget 50% =====
+Q3_shipping_priority:
+    SCAN orders
+    BLOOM FILTER ON customer (c_custkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    SEARCH lineitem EXISTS USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+Q10_returned_items:
+    SCAN customer USING INDEX idx_customer_c_custkey
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN orders
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+    SEARCH part USING INDEX idx_part_p_partkey (p_partkey=?)
+P1_customer_orders:
+    SCAN orders
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SCAN partsupp
+    SEARCH supplier USING INDEX idx_supplier_s_suppkey (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== measured greedy (42 builds), budget 50% =====
+Q3_shipping_priority:
+    SCAN orders
+    BLOOM FILTER ON customer (c_custkey=?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SCAN orders
+    SEARCH lineitem EXISTS USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+Q10_returned_items:
+    SCAN customer USING INDEX idx_customer_c_custkey
+    BLOOM FILTER ON orders (o_custkey=?)
+    SEARCH orders USING AUTOMATIC PARTIAL COVERING INDEX (o_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SCAN orders
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+    BLOOM FILTER ON part (p_partkey=?)
+    SEARCH part USING AUTOMATIC COVERING INDEX (p_partkey=?)
+P1_customer_orders:
+    SCAN orders
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SCAN partsupp
+    BLOOM FILTER ON supplier (s_suppkey=?)
+    SEARCH supplier USING AUTOMATIC COVERING INDEX (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+===== all candidates, budget 100% =====
+Q3_shipping_priority:
+    SEARCH customer USING INDEX idx_customer_c_mktsegment (c_mktsegment=?)
+    SEARCH orders USING INDEX idx_orders_o_custkey (o_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q4_order_priority:
+    SEARCH orders USING INDEX idx_orders_o_orderdate (o_orderdate>? AND o_orderdate<?)
+    SEARCH lineitem EXISTS USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q6_forecast_revenue:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+Q10_returned_items:
+    SEARCH orders USING INDEX idx_orders_o_orderdate (o_orderdate>? AND o_orderdate<?)
+    SEARCH customer USING INDEX idx_customer_c_custkey (c_custkey=?)
+    SEARCH lineitem USING INDEX idx_lineitem_l_orderkey (l_orderkey=?)
+    BLOOM FILTER ON nation (n_nationkey=?)
+    SEARCH nation USING AUTOMATIC COVERING INDEX (n_nationkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+    USE TEMP B-TREE FOR ORDER BY
+Q12_shipping_modes:
+    SEARCH lineitem USING INDEX idx_lineitem_l_receiptdate (l_receiptdate>? AND l_receiptdate<?)
+    SEARCH orders USING COVERING INDEX idx_orders_o_orderkey (o_orderkey=?)
+    USE TEMP B-TREE FOR GROUP BY
+Q14_promotion_effect:
+    SEARCH lineitem USING INDEX idx_lineitem_l_shipdate (l_shipdate>? AND l_shipdate<?)
+    SEARCH part USING INDEX idx_part_p_partkey (p_partkey=?)
+P1_customer_orders:
+    SEARCH orders USING INDEX idx_orders_o_custkey (o_custkey=?)
+    USE TEMP B-TREE FOR ORDER BY
+P2_part_suppliers:
+    SEARCH partsupp USING INDEX idx_partsupp_ps_partkey (ps_partkey=?)
+    SEARCH supplier USING INDEX idx_supplier_s_suppkey (s_suppkey=?)
+    USE TEMP B-TREE FOR ORDER BY
