@@ -38,7 +38,7 @@ Tests: `pytest`
 
 | Tool | Model / version | Tracks | Dates | Kind of work |
 |---|---|---|---|---|
-| Claude Code (CLI) | Claude Opus 5.5 (`claude-opus-5-5`) | Setup, A, B, C, D, F, I | 2026-10-29 | planning, code generation, debugging, testing, documentation |
+| Claude Code (CLI) | Claude Opus 5.5 (`claude-opus-5-5`) | Setup, A, B, C, D, F, G, H, I | 2026-10-29 | planning, code generation, debugging, testing, documentation |
 
 ## Commit convention
 

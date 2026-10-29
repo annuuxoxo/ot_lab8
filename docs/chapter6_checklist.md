@@ -62,3 +62,6 @@
 | Multi-task | GradNorm | D | `multitask.py` | Weights → [0.013, 1.987]; task 2 acc 0.970, task 1 MSE 132.5 | measured (CPU) |
 | Discrete (applied) | Greedy vs ILP for register allocation | F | `trackF_compiler/regalloc.py` | Greedy optimal in 30/32 cases; ILP exact | measured |
 | Discrete (applied) | Exhaustive vs greedy search for pass ordering | F | `f_experiments.pass_ordering` | Greedy picks the worst of 720 orders | measured |
+| Discrete (applied) | Greedy vs DP vs ILP for index selection (knapsack) | H | `trackH_dbms/index_selection.py` | DP = ILP always; greedy equal at 10/25% budgets; up to 3.11× speedup at 50% budget | measured |
+| Discrete (applied) | Interaction-aware (measured) greedy | H | `index_selection.measured_greedy` | 1.36× vs 1.08× for knapsack methods at 10% budget | measured |
+| Scheduling (applied) | MLFQ as an online scheduling heuristic | G | `trackG_xv6/mlfq_scheduler.patch` | Interactive turnaround 33 → 13 ticks; no CPU-throughput cost | measured (QEMU) |
