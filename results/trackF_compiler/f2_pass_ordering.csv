@@ -1,0 +1,6 @@
+method,order,total_executed,orders_evaluated,time_s
+exhaustive: best order,cse > strength > dce > licm > coalesce > const_fold,44097.0,720.0,9.992449332989054
+exhaustive: worst order,cse > strength > dce > coalesce > licm > const_fold,44697.0,720.0,9.992449332989054
+greedy construction,coalesce > licm > dce > const_fold > cse > strength,44697.0,21.0,0.2566194999963045
+original default order,const_fold > cse > strength > dce > licm > coalesce,44109.0,1.0,
+info: distinct objective values among 720 orders,3 distinct; 120 orders reach the best,,,

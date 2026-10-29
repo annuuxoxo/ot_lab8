@@ -1,0 +1,12 @@
+# constant expressions, dead branches, unused results
+debug = 0;
+k = 2 * 8 + 4 - 20;            # = 0
+limit = (10 + 5) * 2;          # = 30
+s = 0; i = 0;
+while (i < limit) {
+  unused = i * 99 + 1;         # never read
+  if (debug) { print(i * 1000); }
+  s = s + i + k;
+  i = i + 1;
+}
+print(s);

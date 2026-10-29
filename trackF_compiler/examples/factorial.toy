@@ -1,0 +1,8 @@
+# factorials 1..12
+n = 1;
+f = 1;
+while (n <= 12) {
+  f = f * n;
+  print(f);
+  n = n + 1;
+}

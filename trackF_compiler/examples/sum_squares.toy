@@ -1,0 +1,8 @@
+# redundant and loop-invariant expressions
+a = 7; b = 5; total = 0; i = 0; n = 300;
+while (i < n) {
+  scale = a * b + 3;            # loop-invariant
+  total = total + i * i + i * i + scale * 4;   # i*i computed twice, *4 = shift
+  i = i + 1;
+}
+print(total);
