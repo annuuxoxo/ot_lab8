@@ -1,0 +1,22 @@
+algorithm,case,noisy,success_prob,estimate
+Deutsch-Jozsa,constant_0,False,1.0,
+Deutsch-Jozsa,constant_0,True,0.939,
+Deutsch-Jozsa,constant_1,False,1.0,
+Deutsch-Jozsa,constant_1,True,0.939,
+Deutsch-Jozsa,balanced_parity,False,1.0,
+Deutsch-Jozsa,balanced_parity,True,0.996,
+Deutsch-Jozsa,balanced_x0,False,1.0,
+Deutsch-Jozsa,balanced_x0,True,0.9735,
+Bernstein-Vazirani,s=1011,False,1.0,
+Bernstein-Vazirani,s=1011,True,0.89925,
+Bernstein-Vazirani,s=110101,False,1.0,
+Bernstein-Vazirani,s=110101,True,0.84875,
+Grover,"n=3, k=2 iterations",False,0.94875,
+Grover,"n=3, k=2 iterations",True,0.71,
+Grover,"n=4, k=3 iterations",False,0.95975,
+Grover,"n=4, k=3 iterations",True,0.4155,
+Grover,"n=5, k=4 iterations",False,0.999,
+Grover,"n=5, k=4 iterations",True,0.09325,
+QPE,"T gate, phi = 1/8, t=3",False,1.0,0.125
+QPE,"P(2pi/3), phi = 1/3, t=3",False,0.68275,0.375
+QPE,"P(2pi/3), phi = 1/3, t=6",False,0.6755,0.328125

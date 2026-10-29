@@ -1,0 +1,26 @@
+model,test_acc,train_time_s,params,tuned,circuit_runs_on_hardware,seed
+Quantum kernel SVM,0.95,0.23738441697787493,39 support vectors,"scale=0.25, C=10",14950,0
+Variational quantum classifier,0.96,0.19722050000564195,12 circuit angles,"fixed: Adam lr=0.1, 60 steps (not tuned)",144000,0
+RBF SVM,0.97,0.04744424999807961,34 support vectors,"{'C': 1, 'gamma': 30}",0,0
+Logistic regression,0.88,0.014781792007852346,3 weights,{'C': 10},0,0
+MLP (16 hidden),0.88,0.10244599997531623,65 weights,{'alpha': 0.01},0,0
+Quantum kernel SVM,0.93,0.23301770800026134,23 support vectors,"scale=0.25, C=100",14950,1
+Variational quantum classifier,0.95,0.2235530840116553,12 circuit angles,"fixed: Adam lr=0.1, 60 steps (not tuned)",144000,1
+RBF SVM,0.96,0.0458544580033049,18 support vectors,"{'C': 10, 'gamma': 10}",0,1
+Logistic regression,0.84,0.013294749980559573,3 weights,{'C': 10},0,1
+MLP (16 hidden),0.96,0.15776670799823478,65 weights,{'alpha': 0.01},0,1
+Quantum kernel SVM,0.91,0.23293674999149516,26 support vectors,"scale=0.25, C=100",14950,2
+Variational quantum classifier,0.97,0.22957624998525716,12 circuit angles,"fixed: Adam lr=0.1, 60 steps (not tuned)",144000,2
+RBF SVM,0.93,0.04721287498250604,26 support vectors,"{'C': 10, 'gamma': 30}",0,2
+Logistic regression,0.87,0.013751250022323802,3 weights,{'C': 10},0,2
+MLP (16 hidden),0.96,0.19369579100748524,65 weights,{'alpha': 0.01},0,2
+Quantum kernel SVM,0.96,0.22901529201772064,32 support vectors,"scale=0.25, C=10",14950,3
+Variational quantum classifier,0.97,0.19547966599930078,12 circuit angles,"fixed: Adam lr=0.1, 60 steps (not tuned)",144000,3
+RBF SVM,0.97,0.04697083300561644,36 support vectors,"{'C': 1, 'gamma': 30}",0,3
+Logistic regression,0.88,0.01392608298920095,3 weights,{'C': 10},0,3
+MLP (16 hidden),0.88,0.1410762080049608,65 weights,{'alpha': 0.01},0,3
+Quantum kernel SVM,0.92,0.2313211250002496,35 support vectors,"scale=0.25, C=10",14950,4
+Variational quantum classifier,0.94,0.19457312501617707,12 circuit angles,"fixed: Adam lr=0.1, 60 steps (not tuned)",144000,4
+RBF SVM,0.98,0.04677741602063179,90 support vectors,"{'C': 0.1, 'gamma': 30}",0,4
+Logistic regression,0.86,0.013663999998243526,3 weights,{'C': 1},0,4
+MLP (16 hidden),0.89,0.15689554199343547,65 weights,{'alpha': 0.0001},0,4

@@ -1,0 +1,6 @@
+model,test_acc_mean,test_acc_std,train_time_s,params_seed0,tuned_seed0,circuit_runs_on_hardware
+Quantum kernel SVM,0.9339999999999999,0.02073644135332767,0.23273505839752034,39 support vectors,"scale=0.25, C=10",14950
+Variational quantum classifier,0.958,0.013038404810405305,0.20808052500360646,12 circuit angles,"fixed: Adam lr=0.1, 60 steps (not tuned)",144000
+RBF SVM,0.962,0.01923538406167132,0.04685196640202775,34 support vectors,"{'C': 1, 'gamma': 30}",0
+Logistic regression,0.866,0.016733200530681537,0.01388357499963604,3 weights,{'C': 10},0
+MLP (16 hidden),0.914,0.04219004621945795,0.1503760497958865,65 weights,{'alpha': 0.01},0
