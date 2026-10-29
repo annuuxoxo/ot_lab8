@@ -1,0 +1,17 @@
+numpy
+scipy
+pandas
+matplotlib
+scikit-learn
+torch
+pulp==2.9.0  # 4.x dropped the bundled CBC solver
+networkx
+pytest
+coverage
+qiskit
+qiskit-aer
+pennylane
+dwave-neal
+minorminer
+dwave-networkx
+duckdb

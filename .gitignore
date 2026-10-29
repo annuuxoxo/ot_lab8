@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+trackG_xv6/xv6/
+trackH_dbms/data/
+trackJ_software_eng/target/
+Assignment_8_*.pdf
