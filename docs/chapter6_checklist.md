@@ -27,3 +27,23 @@
 | Discrete | ILP | B | `knapsack.ilp` (PuLP/CBC) | Exact; ~20 ms (solver start-up dominated) | measured |
 | Discrete | Feature selection (combinatorial) | B | `b_experiments.feature_selection_experiment` | Greedy 6–16× cheaper, misses optimum at k = 3 | measured |
 | Discrete | QUBO / Ising, binary↔spin, penalty terms | B | `qubo.py` | Max-Cut QUBO = −cut = Ising verified; penalty too large → SA success 0% | measured |
+| Foundations | Basic quantum computing concepts, role of optimization in QML | C, I | `trackI_quantum_algos_qml/`, `trackC_quantum_opt/pqc.py` | Superposition/interference (DJ, BV), variational circuits trained classically | simulated |
+| Quantum | QAOA | C | `qaoa_vqe.py` | Max-Cut ratio 0.78→0.92 (p = 1→3, n = 6); SA (classical) = 1.00 | simulated |
+| Quantum | VQE | C | `qaoa_vqe.vqe_experiment` | H₂ exact to 4e-8 Ha ideal; 28.6 mHa error with noise | simulated |
+| Quantum | PQCs / QNNs | C, I | `pqc.classifier` | 12-angle classifier, test acc 0.975 (C), 0.958 (I) | simulated |
+| Quantum | Parameter-shift rule | C | `pqc.parameter_shift_grad` | Equals autodiff to 3.5e-16 | simulated |
+| Quantum | SPSA | C | `pqc.train_classifier` | Same budget: loss 0.239 vs 0.200 (param-shift); 2 runs/step regardless of #params | simulated |
+| Quantum | Quantum natural gradient | C | `pqc.qng_experiment` | 4× fewer steps at equal step size; ties GD once both tuned (6 steps) | simulated |
+| Quantum | Barren plateaus | C | `pqc.barren_plateau_experiment` | Deep: Var 0.087 → 0.0022 (2 → 10 qubits); shallow flat ≈ 0.09 | simulated |
+| Quantum | Finite-shot measurement cost | C | `qaoa_vqe.shots_experiment` | Std ∝ 1/√shots (0.16 / 0.047 / 0.011) | simulated |
+| Quantum | Hardware noise | C, I | `common/quantum.py` noise model | QAOA p > 1 gains erased; Grover n = 5 → 9% success | simulated (noise model) |
+| Quantum | Limits of embedding QUBOs on annealers | C | `pqc.embedding_experiment` | K₃₆ does not embed on Chimera C8 (512 qubits); chains up to 13 | simulated (classical embedding) |
+| Quantum | Deutsch–Jozsa | I | `algorithms.deutsch_jozsa` (hand-written) | 1 query, 100% ideal | simulated |
+| Quantum | Bernstein–Vazirani | I | `algorithms.bernstein_vazirani` (hand-written) | 1 query, 100% ideal, 85–90% noisy | simulated |
+| Quantum | Grover | I | `algorithms.grover` (hand-written) | 25 vs 528 queries at N = 1024; simulator 6000× slower than classical | simulated |
+| Quantum | Quantum Fourier Transform | I | `algorithms.qft` (hand-written) | = DFT matrix to 3.8e-15 | simulated |
+| Quantum | Quantum Phase Estimation | I | `algorithms.qpe` | T gate φ = 1/8 exact; φ = 1/3 needs more bits | simulated |
+| Quantum | Shor | I | `algorithms.shor15` | 15 = 3 × 5, 51.6% of shots; 13,328 CX gates | simulated |
+| Quantum | Quantum annealing | I | `algorithms.annealing_experiment` | P(opt) 0.04 → 0.99 as anneal time 0.5 → 50 | simulated (exact time evolution) |
+| Quantum | Variational classifier | I | `qml_vs_classical.py` | 0.958 ± 0.013 vs RBF SVM 0.962 ± 0.019 | simulated |
+| Quantum | Quantum kernels | I | `qml_vs_classical.quantum_kernel` | 0.934 ± 0.021 after tuning feature scale (0.744 untuned) | simulated |
