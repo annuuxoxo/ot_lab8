@@ -1,0 +1,7 @@
+method,best_lr,final_gap,iters_to_1e-6
+GD,0.1,0.0,1304.0
+Diagonal Hessian,0.6812920690579611,6.809654728989756e-09,2821.0
+Diagonal empirical Fisher,0.6812920690579611,6.522065110203812e-09,2760.0
+info: Hessian condition number at w*,,10596.821172029466,
+info: condition number after diagonal-Hessian preconditioning,,1539.7681394756632,
+info: ||empirical Fisher - H|| / ||H|| at w*,,0.2560070670036483,
