@@ -72,7 +72,7 @@ All models except the VQC get the same treatment: hyperparameters chosen by 5-fo
   - Barren plateaus kill gradients in deep variational circuits (Track C).
   - Loading data costs circuit runs for every kernel entry or gradient.
   - Problem sizes small enough to simulate are trivial for classical methods.
-- **Compared with parallel computing (Track D, Day 3):** parallel speedups are *measured* on real cores today. The quantum "speedups" here are theoretical (counted queries) or simulated, and the simulated wall-clock times are slower than classical. *(Fill in Track D numbers on Day 3.)*
+- **Compared with parallel computing (Track D):** parallel speedups are *measured* on real hardware today: **6.8× on 10 M4 cores** for uneven tasks with load balancing, 7.0× scaled speedup (Gustafson). They are limited by Amdahl's serial fraction (~5%), overhead (tiny tasks ran 2–3× slower than serial) and locks/locality. The quantum "speedups" here are theoretical (Grover's 25 vs 512 queries) or simulated, and their wall-clock times are *slower* than classical (Grover's simulation is 6,000× slower than a Python linear search). Parallelism gives at most a constant factor (≤ number of cores) that is available now. Quantum algorithms promise better scaling (√N, or exponential for Shor) that today's noise and qubit counts don't yet deliver.
 
 ## Correctness checks (`tests/test_trackI.py`, all passing)
 DJ / BV ideal outputs; Grover success equals sin²((2k+1)θ); QFT equals the DFT matrix; QPE gives exactly 001 for the T gate;

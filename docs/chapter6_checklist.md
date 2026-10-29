@@ -47,3 +47,18 @@
 | Quantum | Quantum annealing | I | `algorithms.annealing_experiment` | P(opt) 0.04 → 0.99 as anneal time 0.5 → 50 | simulated (exact time evolution) |
 | Quantum | Variational classifier | I | `qml_vs_classical.py` | 0.958 ± 0.013 vs RBF SVM 0.962 ± 0.019 | simulated |
 | Quantum | Quantum kernels | I | `qml_vs_classical.quantum_kernel` | 0.934 ± 0.021 after tuning feature scale (0.744 untuned) | simulated |
+| Submodular | Diminishing returns, testing assumptions | D | `submodular.test_assumptions` | Coverage: 0% violations; pair-bonus objective: 14.3% violations | measured |
+| Submodular | Greedy selection + checking the (1−1/e) guarantee | D | `submodular.greedy` | Ratio 1.00 when submodular; 0.61 (k = 3) and 0.01 (adversarial) when not | measured |
+| Parallel | Load balancing, makespan | D | `parallel.py` | Static 5.5× vs LPT/dynamic 6.8× at p = 10 (imbalance 1.38 → 1.06) | measured |
+| Parallel | Work stealing | D | `parallel.work_stealing` | 6.7× at p = 10, 19 steals | measured |
+| Parallel | Locality | D | `parallel.sync_locality_experiment` | Row-wise 12.5 ms vs column-wise 32.4 ms | measured |
+| Parallel | Synchronization | D | `parallel.sync_locality_experiment` | Shared lock 69.6 ms vs private counters 13.7 ms | measured |
+| Parallel | Communication overhead | D | `parallel.overhead_experiment`, `parallelism_demo.py` | Tiny tasks: 0.37× at 10 threads; floats communicated per scheme | measured / simulated |
+| Parallel | Data, model, pipeline parallelism | D | `parallelism_demo.py` | All match the single worker exactly; pipeline bubble 50% → 3% | simulated |
+| Parallel | Speedup, efficiency, Amdahl, Gustafson | D | `parallel.py` | Amdahl serial fraction ≈ 0.05; Gustafson scaled speedup 6.96 at p = 10 | measured |
+| Strategy selection | Choosing methods by variable type, size, hardware, communication | D, E | Track D README table | Table for all methods in A–D | — |
+| Distributed | FedAvg vs centralized | D | `fed.py` | E = 1/5/20 → 34/7/2 rounds; non-IID slower | simulated |
+| Multi-task | MGDA | D | `multitask.py` | Raw MGDA ignores the large-gradient task; normalized MGDA best on both tasks | measured (CPU) |
+| Multi-task | GradNorm | D | `multitask.py` | Weights → [0.013, 1.987]; task 2 acc 0.970, task 1 MSE 132.5 | measured (CPU) |
+| Discrete (applied) | Greedy vs ILP for register allocation | F | `trackF_compiler/regalloc.py` | Greedy optimal in 30/32 cases; ILP exact | measured |
+| Discrete (applied) | Exhaustive vs greedy search for pass ordering | F | `f_experiments.pass_ordering` | Greedy picks the worst of 720 orders | measured |
