@@ -1,0 +1,504 @@
+diff --git a/Makefile b/Makefile
+index a26f3db..5025fe7 100644
+--- a/Makefile
++++ b/Makefile
+@@ -64,6 +64,9 @@ OBJDUMP = $(TOOLPREFIX)objdump
+ DETFLAGS = -ffile-prefix-map=$(CURDIR)=.
+ 
+ CFLAGS = -Wall -Werror -Wno-unknown-attributes -O -fno-omit-frame-pointer -ggdb -gdwarf-2
++# Track G: choose the scheduler with  make SCHED=RR  (default, original round-robin)  or  make SCHED=MLFQ
++SCHED ?= RR
++CFLAGS += -DSCHED_$(SCHED) $(MLFQFLAGS)
+ CFLAGS += $(DETFLAGS)
+ CFLAGS += -march=rv64gc
+ CFLAGS += -std=gnu99
+@@ -150,6 +153,7 @@ UPROGS=\
+ 	$U/_logstress\
+ 	$U/_forphan\
+ 	$U/_dorphan\
++	$U/_schedbench\
+ 	$U/_sync\
+ 
+ fs.img: mkfs/mkfs README $(UPROGS)
+diff --git a/kernel/defs.h b/kernel/defs.h
+index 0ae6896..b183a45 100644
+--- a/kernel/defs.h
++++ b/kernel/defs.h
+@@ -98,6 +98,10 @@ void            sleep_prepare(void*);
+ void            sleep(void);
+ void            userinit(void);
+ int             kwait(uint64);
++int             kwaitx(uint64, uint64);
++void            run_proc(struct cpu *, struct proc *);
++int             sched_tick(void);
++void            mlfq_maybe_boost(void);
+ void            wakeup(void*);
+ void            yield(void);
+ int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
+diff --git a/kernel/param.h b/kernel/param.h
+index 1d69801..30a8d15 100644
+--- a/kernel/param.h
++++ b/kernel/param.h
+@@ -12,3 +12,13 @@
+ #define FSSIZE      2000              // size of file system in blocks
+ #define MAXPATH     128               // maximum file path name
+ #define USERSTACK   1                 // user stack pages
++
++// MLFQ scheduler (Track G): number of queues, time slice per queue (ticks), priority-boost period (ticks)
++// (the slices can be overridden at build time, e.g.  make SCHED=MLFQ MLFQFLAGS="-DMLFQ_Q0=2 -DMLFQ_Q1=4 -DMLFQ_Q2=8")
++#define NMLFQ        3
++#ifndef MLFQ_Q0
++#define MLFQ_Q0      1
++#define MLFQ_Q1      2
++#define MLFQ_Q2      4
++#endif
++#define MLFQ_BOOST   40
+diff --git a/kernel/proc.c b/kernel/proc.c
+index 31f23a3..e915cf5 100644
+--- a/kernel/proc.c
++++ b/kernel/proc.c
+@@ -5,6 +5,13 @@
+ #include "spinlock.h"
+ #include "proc.h"
+ #include "defs.h"
++#include "pstat.h"
++
++#ifdef SCHED_MLFQ
++static int mlfq_quantum[NMLFQ] = {MLFQ_Q0, MLFQ_Q1, MLFQ_Q2};
++static struct spinlock boost_lock;  // protects last_boost
++static uint last_boost;
++#endif
+ 
+ struct cpu cpus[NCPU];
+ 
+@@ -51,6 +58,9 @@ procinit(void)
+ 
+   initlock(&pid_lock, "nextpid");
+   initlock(&wait_lock, "wait_lock");
++#ifdef SCHED_MLFQ
++  initlock(&boost_lock, "boost");
++#endif
+   for (p = proc; p < &proc[NPROC]; p++) {
+     initlock(&p->lock, "proc");
+     p->state = UNUSED;
+@@ -124,6 +134,11 @@ allocproc(void)
+ found:
+   p->pid = allocpid();
+   p->state = USED;
++  p->ctime = ticks;  // scheduling statistics (Track G)
++  p->stime = p->etime = p->rtime = 0;
++  p->scheduled = 0;
++  p->level = 0;      // new processes start in the highest-priority queue
++  p->slice_used = 0;
+ 
+   // Allocate a trapframe page.
+   if ((p->trapframe = (struct trapframe *)kalloc()) == 0) {
+@@ -355,6 +370,7 @@ kexit(int status)
+   acquire(&p->lock);
+ 
+   p->xstate = status;
++  p->etime = ticks;
+   p->state = ZOMBIE;
+ 
+   release(&wait_lock);
+@@ -368,6 +384,13 @@ kexit(int status)
+ // Return -1 if this process has no children.
+ int
+ kwait(uint64 addr)
++{
++  return kwaitx(addr, 0);
++}
++
++// Like wait(), but if st != 0 also copies the child's scheduling statistics (struct procstat) to user address st.
++int
++kwaitx(uint64 addr, uint64 st)
+ {
+   struct proc *pp;
+   int havekids, pid;
+@@ -394,6 +417,14 @@ kwait(uint64 addr)
+             release(&wait_lock);
+             return -1;
+           }
++          if (st != 0) {
++            struct procstat ps = {pp->pid, pp->ctime, pp->stime, pp->etime, pp->rtime, pp->level};
++            if (copyout(p->pagetable, p->sz, st, (char *)&ps, sizeof(ps)) < 0) {
++              release(&pp->lock);
++              release(&wait_lock);
++              return -1;
++            }
++          }
+           pp->parent = 0;
+           freeproc(pp);
+           release(&pp->lock);
+@@ -442,26 +473,44 @@ scheduler(void)
+     intr_off();
+ 
+     int found = 0;
++#ifdef SCHED_MLFQ
++    // Multi-level feedback queue: always run a RUNNABLE process from the lowest-numbered (highest-priority)
++    // non-empty queue; round-robin inside a queue. Processes move down when they use up their time slice
++    // (see sched_tick) and everyone moves back to the top every MLFQ_BOOST ticks (prevents starvation).
++    mlfq_maybe_boost();
++    int best = NMLFQ;
++    for (p = proc; p < &proc[NPROC]; p++) {  // pass 1: find the best level (no locks held across procs)
++      acquire(&p->lock);
++      if (p->state == RUNNABLE && p->level < best)
++        best = p->level;
++      release(&p->lock);
++    }
++    if (best < NMLFQ) {
++      static int next = 0;  // where the round-robin scan starts (shared by CPUs; a stale value is harmless)
++      for (int i = 0; i < NPROC; i++) {  // pass 2: first RUNNABLE process at that level, re-checked under its lock
++        p = &proc[(next + i) % NPROC];
++        acquire(&p->lock);
++        if (p->state == RUNNABLE && p->level == best) {
++          next = (p - proc + 1) % NPROC;
++          run_proc(c, p);
++          found = 1;
++          release(&p->lock);
++          break;
++        }
++        release(&p->lock);
++      }
++    }
++#else
++    // Original xv6 round-robin.
+     for (p = proc; p < &proc[NPROC]; p++) {
+       acquire(&p->lock);
+       if (p->state == RUNNABLE) {
+-        // Switch to chosen process.  It is the process's job
+-        // to release its lock and then reacquire it
+-        // before jumping back to us.
+-        p->state = RUNNING;
+-        c->proc = p;
+-        swtch(&c->context, &p->context);
+-
+-        // Don't re-enable interrupts on release.
+-        mycpu()->intena = 0;
+-
+-        // Process is done running for now.
+-        // It should have changed its p->state before coming back.
+-        c->proc = 0;
++        run_proc(c, p);
+         found = 1;
+       }
+       release(&p->lock);
+     }
++#endif
+     if (found == 0) {
+       // nothing to run; stop running on this core until an interrupt.
+       asm volatile("wfi");
+@@ -469,6 +518,89 @@ scheduler(void)
+   }
+ }
+ 
++// Switch to process p (p->lock held, p RUNNABLE) and come back when it gives up the CPU.
++void
++run_proc(struct cpu *c, struct proc *p)
++{
++  if (!p->scheduled) {  // first time on a CPU: record response time
++    p->scheduled = 1;
++    p->stime = ticks;
++  }
++  // Switch to chosen process.  It is the process's job
++  // to release its lock and then reacquire it
++  // before jumping back to us.
++  p->state = RUNNING;
++  c->proc = p;
++  swtch(&c->context, &p->context);
++
++  // Don't re-enable interrupts on release.
++  mycpu()->intena = 0;
++
++  // Process is done running for now.
++  // It should have changed its p->state before coming back.
++  c->proc = 0;
++}
++
++#ifdef SCHED_MLFQ
++// Every MLFQ_BOOST ticks put every process back in the top queue.
++void
++mlfq_maybe_boost(void)
++{
++  struct proc *p;
++  acquire(&boost_lock);
++  if (ticks - last_boost < MLFQ_BOOST) {
++    release(&boost_lock);
++    return;
++  }
++  last_boost = ticks;
++  release(&boost_lock);
++  for (p = proc; p < &proc[NPROC]; p++) {
++    acquire(&p->lock);
++    p->level = 0;
++    p->slice_used = 0;
++    release(&p->lock);
++  }
++}
++#endif
++
++// Called from the timer interrupt for the process running on this CPU.
++// Charges it one tick and returns 1 if it should give up the CPU now.
++int
++sched_tick(void)
++{
++  struct proc *p = myproc();
++  int give_up = 1;  // round-robin: preempt on every tick
++  acquire(&p->lock);
++  p->rtime++;
++#ifdef SCHED_MLFQ
++  int mylevel = p->level;
++  p->slice_used++;
++  if (p->slice_used >= mlfq_quantum[p->level]) {  // used its whole slice: demote
++    if (p->level < NMLFQ - 1)
++      p->level++;
++    p->slice_used = 0;
++    give_up = 1;
++  } else {
++    give_up = 0;
++  }
++  release(&p->lock);
++  // Preempt early if a higher-priority process is waiting (e.g. an I/O-bound process just woke up).
++  // Unlocked reads: only a hint, the scheduler re-checks under the lock.
++  if (!give_up) {
++    for (struct proc *q = proc; q < &proc[NPROC]; q++) {
++      if (q != p && q->state == RUNNABLE && q->level < mylevel) {
++        give_up = 1;
++        break;
++      }
++    }
++  }
++  return give_up;
++#else
++  release(&p->lock);
++  return give_up;
++#endif
++}
++
+ // Switch to scheduler.  Must hold only p->lock
+ // and have changed proc->state. Saves and restores
+ // intena because intena is a property of this
+diff --git a/kernel/proc.h b/kernel/proc.h
+index 5603697..75d8547 100644
+--- a/kernel/proc.h
++++ b/kernel/proc.h
+@@ -101,4 +101,13 @@ struct proc {
+   struct file *ofile[NOFILE];  // Open files
+   struct inode *cwd;           // Current directory
+   char name[16];               // Process name (debugging)
++
++  // Scheduling statistics and MLFQ state (Track G). p->lock must be held.
++  uint ctime;      // tick when created
++  uint stime;      // tick when first scheduled
++  uint etime;      // tick when exited
++  uint rtime;      // ticks spent RUNNING
++  int scheduled;   // 1 once the process has run at least once
++  int level;       // MLFQ queue: 0 = highest priority
++  int slice_used;  // ticks used so far at the current level
+ };
+diff --git a/kernel/pstat.h b/kernel/pstat.h
+new file mode 100644
+index 0000000..e6069b5
+--- /dev/null
++++ b/kernel/pstat.h
+@@ -0,0 +1,10 @@
++// Per-process scheduling statistics returned by the waitstat() system call (Track G).
++// All times are in timer ticks (about 0.1 s each under QEMU).
++struct procstat {
++  int pid;
++  uint ctime;   // tick when the process was created
++  uint stime;   // tick when it was first scheduled
++  uint etime;   // tick when it exited
++  uint rtime;   // ticks spent RUNNING
++  int level;    // MLFQ queue level when it exited (always 0 under round-robin)
++};
+diff --git a/kernel/syscall.c b/kernel/syscall.c
+index 1800f20..6440ee5 100644
+--- a/kernel/syscall.c
++++ b/kernel/syscall.c
+@@ -103,6 +103,7 @@ extern uint64 sys_link(void);
+ extern uint64 sys_mkdir(void);
+ extern uint64 sys_close(void);
+ extern uint64 sys_sync(void);
++extern uint64 sys_waitstat(void);
+ 
+ // An array mapping syscall numbers from syscall.h
+ // to the function that handles the system call.
+@@ -130,6 +131,7 @@ static uint64 (*syscalls[])(void) = {
+   [SYS_mkdir]   = sys_mkdir,
+   [SYS_close]   = sys_close,
+   [SYS_sync]    = sys_sync,
++  [SYS_waitstat] = sys_waitstat,
+   // clang-format on
+ };
+ 
+diff --git a/kernel/syscall.h b/kernel/syscall.h
+index 5a4a39f..e7a6d8d 100644
+--- a/kernel/syscall.h
++++ b/kernel/syscall.h
+@@ -21,3 +21,4 @@
+ #define SYS_mkdir  20
+ #define SYS_close  21
+ #define SYS_sync   22
++#define SYS_waitstat 23
+diff --git a/kernel/sysproc.c b/kernel/sysproc.c
+index cd25557..1702c5f 100644
+--- a/kernel/sysproc.c
++++ b/kernel/sysproc.c
+@@ -110,3 +110,13 @@ sys_uptime(void)
+   release(&tickslock);
+   return xticks;
+ }
++
++// waitstat(int *status, struct procstat *st): wait for a child and also return its scheduling statistics (Track G)
++uint64
++sys_waitstat(void)
++{
++  uint64 status, st;
++  argaddr(0, &status);
++  argaddr(1, &st);
++  return kwaitx(status, st);
++}
+diff --git a/kernel/trap.c b/kernel/trap.c
+index 00e99bc..6a0c32e 100644
+--- a/kernel/trap.c
++++ b/kernel/trap.c
+@@ -82,7 +82,7 @@ usertrap(void)
+     kexit(-1);
+ 
+   // give up the CPU if this is a timer interrupt.
+-  if (which_dev == 2)
++  if (which_dev == 2 && sched_tick())  // Track G: scheduler decides whether to preempt
+     yield();
+ 
+   prepare_return();
+@@ -154,7 +154,7 @@ kerneltrap()
+   }
+ 
+   // give up the CPU if this is a timer interrupt.
+-  if (which_dev == 2 && myproc() != 0)
++  if (which_dev == 2 && myproc() != 0 && sched_tick())  // Track G
+     yield();
+ 
+   // the yield() may have caused some traps to occur,
+diff --git a/user/schedbench.c b/user/schedbench.c
+new file mode 100644
+index 0000000..f8e50a8
+--- /dev/null
++++ b/user/schedbench.c
+@@ -0,0 +1,93 @@
++// Track G: scheduler benchmark.
++//   schedbench 0          calibration: ticks taken by spin(UNITS)
++//   schedbench 1          mixed: 3 CPU-bound + 3 I/O-bound (interactive) processes started together
++//   schedbench 2          short vs long: 1 long CPU job, then 4 short CPU jobs arrive 2 ticks later
++//   schedbench 3          equal: 4 identical CPU-bound jobs (fairness / overhead check)
++// For every child it prints one line:
++//   STAT <workload> <kind> <pid> <ctime> <stime> <etime> <rtime> <level>
++// turnaround = etime - ctime, response = stime - ctime, waiting = turnaround - rtime (in ticks, ~0.1 s each).
++#include "kernel/types.h"
++#include "kernel/pstat.h"
++#include "user/user.h"
++
++#define UNITS 2000  // CPU work of one long job: about 20 ticks (2 s) alone (calibrated: 800 units = 8 ticks)
++
++static int pids[16];
++static char *kinds[16];
++static int nkids;
++
++volatile uint sink;  // the busy loop writes here so the compiler cannot remove it
++
++void
++spin(int units)
++{
++  uint x = 0;
++  for (int u = 0; u < units; u++)
++    for (int i = 0; i < 1000000; i++)
++      sink = x += i ^ u;
++}
++
++void
++spawn(char *kind, int units, int io_rounds)
++{
++  int pid = fork();
++  if (pid < 0) {
++    printf("fork failed\n");
++    exit(1);
++  }
++  if (pid == 0) {
++    if (io_rounds > 0) {
++      for (int r = 0; r < io_rounds; r++) {  // interactive: a little CPU, then block (sleep) for 1 tick
++        spin(units);
++        pause(1);
++      }
++    } else {
++      spin(units);
++    }
++    exit(0);
++  }
++  pids[nkids] = pid;
++  kinds[nkids] = kind;
++  nkids++;
++}
++
++int
++main(int argc, char *argv[])
++{
++  int w = argc > 1 ? atoi(argv[1]) : 1;
++  if (w == 0) {
++    int t0 = uptime();
++    spin(UNITS);
++    printf("CALIB %d units took %d ticks\n", UNITS, uptime() - t0);
++    exit(0);
++  }
++  if (w == 1) {
++    for (int i = 0; i < 3; i++)
++      spawn("cpu", UNITS, 0);
++    for (int i = 0; i < 3; i++)
++      spawn("io", 8, 10);  // ~0.2 ticks of CPU, then sleep 1 tick; 10 rounds
++  } else if (w == 2) {
++    spawn("long", UNITS, 0);
++    pause(2);
++    for (int i = 0; i < 4; i++)
++      spawn("short", UNITS / 8, 0);
++  } else if (w == 3) {
++    for (int i = 0; i < 4; i++)
++      spawn("cpu", UNITS / 2, 0);
++  }
++  for (int k = 0; k < nkids; k++) {
++    int status;
++    struct procstat ps;
++    if (waitstat(&status, &ps) < 0) {
++      printf("waitstat failed\n");
++      exit(1);
++    }
++    char *kind = "?";
++    for (int j = 0; j < nkids; j++)
++      if (pids[j] == ps.pid)
++        kind = kinds[j];
++    printf("STAT %d %s %d %d %d %d %d %d\n", w, kind, ps.pid, ps.ctime, ps.stime, ps.etime, ps.rtime, ps.level);
++  }
++  printf("DONE %d\n", w);
++  exit(0);
++}
+diff --git a/user/user.h b/user/user.h
+index 29aad59..14fa571 100644
+--- a/user/user.h
++++ b/user/user.h
+@@ -24,6 +24,8 @@ int getpid(void);
+ char *sys_sbrk(int, int);
+ int pause(int);
+ int uptime(void);
++struct procstat;
++int waitstat(int*, struct procstat*);
+ int sync(void);
+ 
+ // ulib.c
+diff --git a/user/usys.pl b/user/usys.pl
+index 4d054e8..debf54e 100755
+--- a/user/usys.pl
++++ b/user/usys.pl
+@@ -43,3 +43,4 @@ entry("sbrk");
+ entry("pause");
+ entry("uptime");
+ entry("sync");
++entry("waitstat");

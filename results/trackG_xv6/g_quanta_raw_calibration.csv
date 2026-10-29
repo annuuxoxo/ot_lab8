@@ -1,0 +1,9 @@
+scheduler,repeat,calib_ticks_long_job_alone
+MLFQ,0,36
+MLFQ-2/4/8,0,36
+MLFQ-2/4/8,1,36
+MLFQ,1,36
+MLFQ,2,36
+MLFQ-2/4/8,2,36
+MLFQ-2/4/8,3,36
+MLFQ,3,36

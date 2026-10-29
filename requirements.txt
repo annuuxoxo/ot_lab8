@@ -5,6 +5,7 @@ matplotlib
 scikit-learn
 torch
 pulp==2.9.0  # 4.x dropped the bundled CBC solver
+pexpect
 networkx
 pytest
 coverage
