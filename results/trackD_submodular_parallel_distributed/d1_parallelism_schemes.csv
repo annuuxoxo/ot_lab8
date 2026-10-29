@@ -1,0 +1,9 @@
+scheme,max_diff_vs_single,floats_communicated_per_step,note
+"data parallel, 2 workers",2.7755575615628914e-17,4224,full model copy per worker
+"data parallel, 4 workers",2.7755575615628914e-17,8448,full model copy per worker
+"data parallel, 8 workers",2.7755575615628914e-17,16896,full model copy per worker
+"model parallel, 2 workers (1 layer each)",0.0,32768,activations forward + gradients backward
+"pipeline, 2 stages, 1 micro-batches",0.0,32768,bubble 50%; 2 time units vs 2 sequential (speedup 1.00x of max 2x)
+"pipeline, 2 stages, 4 micro-batches",0.0,32768,bubble 20%; 5 time units vs 8 sequential (speedup 1.60x of max 2x)
+"pipeline, 2 stages, 8 micro-batches",0.0,32768,bubble 11%; 9 time units vs 16 sequential (speedup 1.78x of max 2x)
+"pipeline, 2 stages, 32 micro-batches",1.6653345369377348e-16,32768,bubble 3%; 33 time units vs 64 sequential (speedup 1.94x of max 2x)

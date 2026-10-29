@@ -1,0 +1,5 @@
+experiment,variant,time_s
+synchronization,shared counter + lock,0.06956195802194998
+synchronization,"private counters, summed at end",0.013742792012635618
+locality,row-wise (contiguous memory),0.012457292003091425
+locality,column-wise (stride 32 KB),0.032365124992793426
