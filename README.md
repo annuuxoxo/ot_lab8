@@ -45,6 +45,7 @@ Tests: `pytest`
 | Tool | Model / version | Tracks | Dates | Kind of work |
 |---|---|---|---|---|
 | Claude Code (CLI) | Claude Opus 5.5 (`claude-opus-5-5`) | Setup, A–J, report | 2026-10-29 – 2026-10-30 | planning, code generation, debugging, testing, documentation |
+| Claude Code agent (fresh context) | Claude Sonnet 5.5 (`claude-sonnet-5-5`) | B (prompt B1, tool comparison only; not merged into the repo's code) | 2026-10-30 | code generation, testing |
 
 ## Commit convention
 

@@ -256,7 +256,10 @@ Parallelism gives a bounded constant factor that is available now. Quantum algor
 
 **10. Which AI tools did you use, how did their outputs differ, and which AI-generated errors did you find and fix?**
 - **Claude Code (Claude Opus 5.5)** was used for all tracks (register in the README; prompts per track in `prompts/`; commits tagged `[AI:claude-code]`).
-- **Second tool:** _fill in after running prompt B1 in it — see `docs/tool_comparison.md`._
+- **Second tool:** prompt B1 was also given to **Claude Sonnet 5.5**, as a separate agent with a fresh context and an isolated folder (`docs/tool_comparison.md`, output in `prompts/B/tool2_sonnet_B1/`).
+  - Sonnet was correct on the first try (20/20 tests in 47 s; its optima match ours on all 12 instances), but it returned only objective values and never checked feasibility.
+  - Opus did more verification (an independent `check()`, harder instances), but needed a fix for an out-of-date PuLP API.
+  - Both are Claude models, so a non-Claude tool would make a stronger comparison.
 - **Errors found and fixed:** 20, in `docs/failure_log.md`. They include:
   - unfair comparisons: coarse or edge-of-grid hyperparameter tuning, untuned quantum-kernel baselines
   - wrong evaluation points: Fisher at w = 0

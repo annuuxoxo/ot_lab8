@@ -24,4 +24,4 @@ exhaustive on wine), `tests/test_trackB.py`.
 
 ## Verification note
 DP, B&B and ILP equal brute force on 8 instances (tests); every solution passes `check()` in the experiment loop.
-**Tool comparison: this prompt must also be run in a second AI tool -> docs/tool_comparison.md (to do by the student).**
+**Tool comparison:** the same prompt was given to Claude Sonnet 5.5 (fresh context, isolated folder) on 2026-10-30. Its output is in `tool2_sonnet_B1/` and the comparison is in `docs/tool_comparison.md`.

@@ -9,3 +9,4 @@ trackJ_software_eng/target/
 Assignment_8_*.pdf
 results/trackJ_software_eng/work/*
 !results/trackJ_software_eng/work/select_*.txt
+docs/report.html
