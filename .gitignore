@@ -7,3 +7,5 @@ trackG_xv6/xv6/
 trackH_dbms/data/
 trackJ_software_eng/target/
 Assignment_8_*.pdf
+results/trackJ_software_eng/work/*
+!results/trackJ_software_eng/work/select_*.txt

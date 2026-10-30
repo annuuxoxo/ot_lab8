@@ -1,0 +1,46 @@
+{
+  "repo": "https://github.com/astanin/python-tabulate.git",
+  "commit": "268615a5c27dc40e5c22454c07b44d5c50410da0",
+  "loc": {
+    "tabulate/__init__.py": 2900,
+    "tabulate/cli.py": 227
+  },
+  "outcomes_full_run": {
+    "passed": 322,
+    "skipped": 44
+  },
+  "passing_tests": 322,
+  "lines_required": 938,
+  "import_only_lines": 550,
+  "shared_setup_ms": {
+    "numpy": 18.324041971936822,
+    "pandas": 107.49683302128688
+  },
+  "ilp": {
+    "status": "optimal",
+    "n_vars": 322,
+    "n_constraints": 289,
+    "n_lines": 938
+  },
+  "naive_ilp": {
+    "status": "optimal",
+    "n_vars": 322,
+    "n_constraints": 289,
+    "n_lines": 938
+  },
+  "greedy_solve_s": 0.12088908295845613,
+  "ilp_solve_s": 0.1359635420376435,
+  "mutants": 40,
+  "killed": {
+    "full suite": 33,
+    "greedy": 31,
+    "ILP": 30,
+    "random (seed 0)": 27
+  },
+  "killed_by_full_missed_by": {
+    "greedy": 2,
+    "ILP": 3,
+    "random (seed 0)": 6
+  },
+  "python": "3.12.16"
+}
