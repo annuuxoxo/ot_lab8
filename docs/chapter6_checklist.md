@@ -65,3 +65,8 @@
 | Discrete (applied) | Greedy vs DP vs ILP for index selection (knapsack) | H | `trackH_dbms/index_selection.py` | DP = ILP always; greedy equal at 10/25% budgets; up to 3.11× speedup at 50% budget | measured |
 | Discrete (applied) | Interaction-aware (measured) greedy | H | `index_selection.measured_greedy` | 1.36× vs 1.08× for knapsack methods at 10% budget | measured |
 | Scheduling (applied) | MLFQ as an online scheduling heuristic | G | `trackG_xv6/mlfq_scheduler.patch` | Interactive turnaround 33 → 13 ticks; no CPU-throughput cost | measured (QEMU) |
+| Discrete (applied, main case study) | First-fit vs DSATUR vs local search vs ILP for exam timetabling | E | `trackE_case_study/timetabling.py` | 40 courses: objective −32% (ILP) / −29% (local search) vs first-fit; ILP period = lower bound on all seeds; plain DSATUR worse than baseline | measured |
+| Discrete (applied) | Lower bounds to certify heuristics (clique + room-capacity bound) | E | `timetabling.clique_lower_bound` | Room bound 19–20 slots vs clique 9–11 at 40 courses; rooms are the binding constraint | measured |
+| Strategy selection | Method choice for the main case study | E | `trackE_case_study/README.md` §5 | Heuristic + local search at registry scale; ILP for small instances and bounds | — |
+| Discrete (applied) | Greedy vs ILP weighted set cover (test-suite minimization) | J | `trackJ_software_eng/minimize.py` | tabulate: 322 → 68 tests, 100% line coverage kept, 2.5× faster wall time; greedy within 0.1% of ILP | measured |
+| Discrete (applied) | Fixed-charge set cover (shared setup costs) | J | `minimize.ilp(needs, setup)` | Naive per-test costs under-predicted the suite 2.5×; fixed-charge model within 10% of measured | measured |

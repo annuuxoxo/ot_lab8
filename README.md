@@ -24,7 +24,7 @@ pip install -r requirements.txt
 | G — xv6 | see `trackG_xv6/README.md` | `results/trackG_xv6/` |
 | H — DBMS | `python trackH_dbms/run.py` | `results/trackH_dbms/` |
 | I — Quantum algorithms / QML | `python trackI_quantum_algos_qml/run.py` | `results/trackI_quantum_algos_qml/` |
-| J — Software engineering | `python trackJ_software_eng/run.py` | `results/trackJ_software_eng/` |
+| J — Software engineering | `python trackJ_software_eng/run.py` (clones python-tabulate into `trackJ_software_eng/target/`) | `results/trackJ_software_eng/` |
 
 Tests: `pytest`
 
@@ -34,11 +34,17 @@ Tests: `pytest`
 - macOS 26.6.2
 - No GPU or quantum hardware; quantum results are from simulators.
 
+## External code and libraries
+- **python-tabulate** (MIT licence, commit `268615a`): the Track J target. It is cloned at run time and not included in this repo.
+- **xv6-riscv** (MIT licence, commit `e93dabe`): Track G. Only my patch is included.
+- **TPC-H data:** generated with DuckDB's `tpch` extension.
+- Python libraries are listed in `requirements.txt`. Everything else was written for this assignment with AI assistance, as recorded in `prompts/`.
+
 ## AI tools register
 
 | Tool | Model / version | Tracks | Dates | Kind of work |
 |---|---|---|---|---|
-| Claude Code (CLI) | Claude Opus 5.5 (`claude-opus-5-5`) | Setup, A, B, C, D, F, G, H, I | 2026-10-29 | planning, code generation, debugging, testing, documentation |
+| Claude Code (CLI) | Claude Opus 5.5 (`claude-opus-5-5`) | Setup, A–J, report | 2026-10-29 – 2026-10-30 | planning, code generation, debugging, testing, documentation |
 
 ## Commit convention
 
