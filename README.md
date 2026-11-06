@@ -28,6 +28,9 @@ pip install -r requirements.txt
 
 Tests: `pytest`
 
+Report: `docs/Assignment8_Report.docx` (Word) and `docs/report.pdf`. Rebuild them with
+`npm install docx && node docs/build_report_docx.js` and `python docs/build_report.py` (needs Google Chrome).
+
 ## Hardware used for all measurements
 
 - Apple M4 (10 cores: 4 performance + 6 efficiency), 16 GB RAM
