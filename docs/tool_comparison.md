@@ -5,7 +5,7 @@ tests against brute force), given to two set-ups with the same wording (`prompts
 
 | | Tool 1 | Tool 2 |
 |---|---|---|
-| Set-up | Claude Code (CLI), **Claude Opus 5.5**, the main session that built this repo | **Claude Sonnet 5.5**, run as a separate Claude Code agent with a fresh context, on 2026-10-30 |
+| Set-up | Claude Code (CLI), **Claude Opus 5.5**, the main session that built this repo | **Claude Sonnet 5.5**, run as a separate Claude Code agent with a fresh context |
 | Isolation | — | Worked in an empty scratch folder; told not to read this repository; got only the B1 prompt plus the Python path |
 | Output kept in | `trackB_discrete/` (commit `131d1cf`) | `prompts/B/tool2_sonnet_B1/` (code, summary CSV, plot, as produced) |
 

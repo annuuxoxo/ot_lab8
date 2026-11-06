@@ -271,7 +271,7 @@ Parallelism gives a bounded constant factor that is available now. Quantum algor
 ---
 
 ## Review notes (prompt V1: skeptical self-review)
-- **Re-run for this report:** all 96 tests (7 s). Every `run.py` was run when its track was built (the E and J runs on 2026-10-30). Tracks G (needs QEMU) and H (≈ 5 min) were not re-run from a fresh venv.
+- **Re-run for this report:** all 96 tests (7 s). Every `run.py` was run when its track was built. Tracks G (needs QEMU) and H (≈ 5 min) were not re-run from a fresh venv.
 - **Variance:** stochastic results report repeats (A 5 seeds, C 3–5 seeds, D 3 runs, E 3 instances, I 5 splits, J 5 timing repeats). Single-run items: B penalty sweep (20 SA seeds, success rate), F (deterministic).
 - **Not proven optimal:** the Track E ILP (time limit). Its period is optimal because it equals the lower bound; the back-to-back count is not proven.
 - **Speedup claims** are measured on one laptop, with mixed P/E cores (D). Quantum "speedups" are reported only as query counts, never as wall-clock gains.
