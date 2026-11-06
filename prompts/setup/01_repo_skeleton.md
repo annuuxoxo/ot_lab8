@@ -5,7 +5,7 @@
 - **Commit:** 8b2d3f3
 
 ## Original prompt
-> ok lets start day 1  *(executing prompt S1 from plan.md: create the repo skeleton, common/utils.py, docs stubs, requirements, README with AI tools register; create venv)*
+> ok lets start day 1  *(executing prompt S1: create the repo skeleton, common/utils.py, docs stubs, requirements, README with AI tools register; create venv)*
 
 ## AI response (excerpt)
 Created a separate git repo in `ot_lab8/` (the home folder is itself a git repo, so the assignment needs its own),

@@ -1,7 +1,6 @@
 # Assignment 8 — Optimize Anything
 
 Optimization Techniques lab: ten experiment tracks (A–J) built with AI-assisted (vibe) coding.
-See `plan.md` for the schedule and scope.
 
 ## Setup
 

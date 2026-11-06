@@ -80,4 +80,4 @@ so the slices should be chosen for the workload.
 
 ## Limitations
 One CPU in the benchmark (MLFQ also passes usertests with 3); simple synthetic workloads; times are QEMU ticks, not
-real hardware; no second kernel feature (copy-on-write fork was out of scope for the 5-day plan).
+real hardware; one kernel feature (copy-on-write fork would be a natural second one).

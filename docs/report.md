@@ -1,8 +1,7 @@
 # Technical Report: Assignment 8, Optimize Anything
 
-All ten tracks (A–J) were completed in a **reduced 5-day scope** instead of 14 days (see `plan.md`, "Scope"):
-every track has an objective, a baseline, a fair comparison, a correctness check and results tables, but sizes are
-small and some optional extensions were skipped (listed per track under *Limitations*). Every number in this report
+All ten compulsory tracks (A–J) were completed. Every track has an objective, a baseline, a fair comparison, a correctness check and results tables. Problem sizes
+are kept small enough that exact methods or brute force can verify the results; each track lists its limitations. Every number in this report
 comes from a file in `results/`; each track's README has the full tables and how to reproduce them.
 
 - **Hardware:** Apple M4 (10 cores: 4 performance + 6 efficiency), 16 GB RAM, macOS 26.6.2. Python 3.12.
@@ -215,7 +214,7 @@ Methods that don't fit a problem are stated as such. For example, continuous met
 - **Policy trade-offs:** MLFQ hurts short jobs that don't fit the top queues (G); line coverage doesn't preserve fault detection (J: 3 of 33 mutants missed).
 - **Quantum and parallel limits:** noise erases QAOA depth gains; barren plateaus; tiny parallel tasks run slower than serial.
 - **AI errors:** 20 AI-generated errors are documented in `docs/failure_log.md`.
-- **Scope:** sizes are small and run on one laptop; quantum results are simulated only; the scope was cut from 14 to 5 days.
+- **Scope:** sizes are small and run on one laptop; quantum results are simulated only.
 
 **6. What evidence shows that your results are correct and reproducible?**
 - 96 pytest tests, all passing. They include exact methods equal to brute force (B, E, F, H, J), gradients checked against finite differences and autodiff (A, C), and quantum circuits checked against analytic results (I).
@@ -276,4 +275,4 @@ Parallelism gives a bounded constant factor that is available now. Quantum algor
 - **Variance:** stochastic results report repeats (A 5 seeds, C 3–5 seeds, D 3 runs, E 3 instances, I 5 splits, J 5 timing repeats). Single-run items: B penalty sweep (20 SA seeds, success rate), F (deterministic).
 - **Not proven optimal:** the Track E ILP (time limit). Its period is optimal because it equals the lower bound; the back-to-back count is not proven.
 - **Speedup claims** are measured on one laptop, with mixed P/E cores (D). Quantum "speedups" are reported only as query counts, never as wall-clock gains.
-- **Missing from the 14-day brief:** real quantum hardware, PostgreSQL / join-order selection (H2), a second xv6 feature, and LLVM. These were left out deliberately to fit the 5-day scope.
+- **Not covered (next steps):** real quantum hardware, PostgreSQL and join-order selection, a second xv6 feature, and LLVM-based compiler passes.

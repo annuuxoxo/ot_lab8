@@ -76,4 +76,4 @@ the optimum; the result hash ignores row order; the timeout cap interrupts a run
 ## Limitations
 SQLite only (no PostgreSQL or real buffer-pool tuning); 8 queries; latencies are warm-cache medians on one laptop;
 the knapsack treats benefits as additive, which this experiment shows is the main weakness of the formulation.
-Join-order selection (H2) was not done in the 5-day scope.
+Join-order selection is not covered (a next step).

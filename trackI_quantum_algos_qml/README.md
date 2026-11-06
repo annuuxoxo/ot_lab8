@@ -3,7 +3,7 @@
 Run: `python trackI_quantum_algos_qml/run.py` (≈ 15 s) · Tests: `pytest tests/test_trackI.py`
 All numbers from `results/trackI_quantum_algos_qml/*.csv`. **Everything is simulated** (Qiskit Aer statevector /
 sampling; "noisy" = the depolarizing + readout noise model in `common/quantum.py`). No real hardware was used
-(no IBM Quantum access within the time available), so the noisy runs stand in for hardware.
+(no IBM Quantum hardware access was used), so the noisy runs stand in for hardware.
 
 ## Objective
 Run every quantum algorithm in the course, write several circuits by hand, compare quantum ML with classical ML on

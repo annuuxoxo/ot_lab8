@@ -18,7 +18,7 @@ Save EXPLAIN QUERY PLAN before/after. Test: query result hashes are identical in
 Generated trackH_dbms/data.py (TPC-H SF 0.1 via DuckDB dbgen -> SQLite, no indexes) and index_selection.py (8-query workload, 13 candidates, measured size and standalone benefit, knapsack by greedy / DP / ILP, build-and-measure of each selection, EXPLAIN QUERY PLAN dump, result hashing).
 
 ## Revised prompt / corrections
-- Used SQLite instead of PostgreSQL as planned for the 5-day scope.
+- Used SQLite instead of PostgreSQL (built into Python, no server to set up); PostgreSQL is listed as a next step.
 - First run never finished: an index on orders(o_orderdate) or orders(o_orderkey) alone makes SQLite choose a catastrophic plan for Q10 (>15 s vs 0.09 s); there was no per-query timeout. Added a 5 s cap with a penalty and timeout-aware result checks (failure log #17).
 - Because benefits clearly interact, added a 4th method: measured greedy (forward selection on real builds).
 

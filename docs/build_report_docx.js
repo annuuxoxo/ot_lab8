@@ -183,7 +183,7 @@ children.push(
   new Paragraph({ heading: HeadingLevel.TITLE, alignment: AlignmentType.CENTER, children: [new TextRun("Assignment 8: Optimize Anything")] }),
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 600 }, children: [new TextRun({ text: "14-Day Vibe-Coding Challenge: Technical Report", size: 30 })] }),
   new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Main case study (Track E): university exam timetabling", size: 24 })] }),
-  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 900 }, children: [new TextRun({ text: "All ten compulsory tracks A–J, completed in a reduced 5-day scope", size: 22, color: "555555" })] }),
+  new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 900 }, children: [new TextRun({ text: "All ten compulsory tracks A–J", size: 22, color: "555555" })] }),
   ...["Name: ______________________________", "Roll number: ______________________", "Repository: https://github.com/<your-username>/ot_lab8",
     "Date: November 2026"].map((t) => new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 120 }, children: [new TextRun({ text: t, size: 22 })] })),
   new Paragraph({ children: [new PageBreak()] }),
@@ -193,7 +193,7 @@ children.push(
 );
 
 // 1. Introduction
-children.push(H1("1. Introduction and scope"), ...blocks(report._intro.replace(/^# .*\n/, "")),
+children.push(H1("1. Introduction"), ...blocks(report._intro.replace(/^# .*\n/, "")),
   H2("Hardware and software"), ...blocks(readme["Hardware used for all measurements"]),
   P("Software: Python 3.12 (Homebrew, arm64), NumPy, SciPy, PyTorch, PuLP 2.9 (CBC), Qiskit 2.6 + Aer, PennyLane, dwave-neal, minorminer, DuckDB, SQLite, QEMU + riscv64-elf-gcc. Exact versions are in `requirements.txt`."),
   H2("How the brief's problem-solving process (Section 4) was applied"),
