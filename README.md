@@ -1,4 +1,8 @@
 # Assignment 8 — Optimize Anything
+## Name : Anushree Upasham
+## 241071077
+## TY BTECH CE
+
 
 Optimization Techniques lab: ten experiment tracks (A–J) built with AI-assisted (vibe) coding.
 
